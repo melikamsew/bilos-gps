@@ -5,7 +5,7 @@ const urlsToCache = [
   "bilos.png",
   "manifest.json",
   "service-worker.js",
-  "icons/bilos-192.png",
+  "icons/bilos-800.png",
   "icons/icon-512.png"
 ];
 
