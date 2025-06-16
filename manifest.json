@@ -1,5 +1,5 @@
 {
-  "name": "Bilos GPS Events Results",
+  "name": "Bilos Car GPS Event Results",
   "short_name": "GPS Events",
   "start_url": ".",
   "display": "standalone",
@@ -7,8 +7,8 @@
   "theme_color": "#ffbe59",
   "icons": [
     {
-      "src": "icons/bilos-192.png",
-      "sizes": "192x192",
+      "src": "icons/bilos-800.png",
+      "sizes": "800x800",
       "type": "image/png"
     },
     {
