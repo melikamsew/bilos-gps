@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver GPS Event Entry</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/bilos-192.png">
+  <meta name="theme-color" content="#2366d1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #8F9779;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 60px auto;
+      background: #D8E4BC;
+      border-radius: 20px;
+      padding: 30px 34px 26px 34px;
+      box-shadow: 0 3px 12px #a2a2a2;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 36px;
+      color: #2366d1;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    .form-section {
+      margin-bottom: 28px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #c7d2b2;
+    }
+    .form-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 15px;
+      border-radius: 4px;
+      border: 1px solid #bbb;
+      background: #f6f6f6;
+    }
+    input[type="date"] {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    .actions {
+      display: flex;
+      gap: 14px;
+      margin-top: 18px;
+      justify-content: center;
+    }
+    button {
+      padding: 9px 20px;
+      font-size: 15px;
+      border-radius: 4px;
+      border: none;
+      background: #2366d1;
+      color: white;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button[type="button"] {
+      background: #6c757d;
+    }
+    button:hover {
+      opacity: 0.92;
+    }
+    .inline-actions {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 12px 3vw;
+      }
+      h2 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNXwvhr0Xeczla_65xMBeYo6_1C3szp7c",
+      authDomain: "endex-bilos.firebaseapp.com",
+      projectId: "endex-bilos",
+      storageBucket: "endex-bilos.firebasestorage.app",
+      messagingSenderId: "586655593314",
+      appId: "1:586655593314:web:60f21bf38c33e0f960f23b"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>Driver GPS Event Entry</h2>
+    <form id="gpsForm" autocomplete="off">
+      <div class="form-section">
+        <div class="form-group">
+          <label for="driver">Driver Name:</label>
+          <div class="inline-actions">
+            <input type="text" id="newDriverInput" placeholder="New Driver Name">
+            <button type="button" onclick="addDriver()">Add</button>
+            <button type="button" onclick="removeDriver()">Delete</button>
+          </div>
+          <select id="driver" name="driver" required></select>
+        </div>
+        <div class="form-group">
+          <label for="plate">Plate Number:</label>
+          <div class="inline-actions">
+            <input type="text" id="newPlateInput" placeholder="New Plate Number">
+            <button type="button" onclick="addPlate()">Add</button>
+            <button type="button" onclick="removePlate()">Delete</button>
+          </div>
+          <select id="plate" name="plate" required></select>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-group">
+          <label for="startingPoint">Starting Point:</label>
+          <input type="text" id="startingPoint" name="startingPoint" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label for="destination">Destination:</label>
+          <input type="text" id="destination" name="destination" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label for="stoppingPlace">Stopping Place:</label>
+          <input type="text" id="stoppingPlace" name="stoppingPlace" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label for="date">Date:</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div class="form-group">
+          <label for="stoppingTime">Stopping Time:</label>
+          <input type="text" id="stoppingTime" name="stoppingTime" required placeholder="e.g. 14:25 or 2:25 PM">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-group">
+          <label for="unauthorised">Moved Unauthorised Place (if any):</label>
+          <input type="text" id="unauthorised" name="unauthorised" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label for="gpsProblem">Other GPS Problem (if any):</label>
+          <input type="text" id="gpsProblem" name="gpsProblem" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label for="techProblem">Technical Problem:</label>
+          <select id="techProblem" name="techProblem">
+            <option value="">-- Select Technical Problem --</option>
+            <option>Battery Issue</option>
+            <option>Accident</option>
+            <option>Signal Loss</option>
+            <option>Traffic</option>
+            <option>No</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit">Add Entry</button>
+        <button type="button" onclick="window.location='result.html'">View Submitted Data</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    // Default values for drivers and plates (local only, not on Firestore for now)
+    const defaultDrivers = [
+      "Dawit Beyen","Habitamu Eshetu","Simegnew Mine","Tefera Addis",
+      "Meniberu Zeleke","Birhanu Tefera","Naod Yitbarek","Daniel Ananiye"
+    ];
+    const defaultPlates = [
+      "52782","73626","92897","82132","63156","22376","40877","55033","77435","88285","53702"
+    ];
+    if (!localStorage.getItem('drivers')) localStorage.setItem('drivers', JSON.stringify(defaultDrivers));
+    if (!localStorage.getItem('plates')) localStorage.setItem('plates', JSON.stringify(defaultPlates));
+    function loadDrivers() {
+      const driverSelect = document.getElementById('driver');
+      driverSelect.innerHTML = '<option value="">-- Select Driver --</option>';
+      (JSON.parse(localStorage.getItem('drivers') || '[]')).forEach(d => {
+        const opt = document.createElement('option'); opt.value = d; opt.textContent = d; driverSelect.appendChild(opt);
+      });
+    }
+    function loadPlates() {
+      const plateSelect = document.getElementById('plate');
+      plateSelect.innerHTML = '<option value="">-- Select Plate --</option>';
+      (JSON.parse(localStorage.getItem('plates') || '[]')).forEach(p => {
+        const opt = document.createElement('option'); opt.value = p; opt.textContent = p; plateSelect.appendChild(opt);
+      });
+    }
+    function addDriver() {
+      const input = document.getElementById('newDriverInput'); const name = input.value.trim();
+      if (name) { let drivers = JSON.parse(localStorage.getItem('drivers') || '[]');
+        if (!drivers.includes(name)) { drivers.push(name); localStorage.setItem('drivers', JSON.stringify(drivers)); loadDrivers(); input.value = ''; }
+        else alert("Driver already exists."); }
+    }
+    function removeDriver() {
+      const driverSelect = document.getElementById('driver'); const selected = driverSelect.value;
+      if (selected && confirm("Delete driver: " + selected + "?")) {
+        let drivers = JSON.parse(localStorage.getItem('drivers') || '[]');
+        drivers = drivers.filter(d => d !== selected); localStorage.setItem('drivers', JSON.stringify(drivers)); loadDrivers();
+      }
+    }
+    function addPlate() {
+      const input = document.getElementById('newPlateInput'); const plate = input.value.trim();
+      if (plate) { let plates = JSON.parse(localStorage.getItem('plates') || '[]');
+        if (!plates.includes(plate)) { plates.push(plate); localStorage.setItem('plates', JSON.stringify(plates)); loadPlates(); input.value = ''; }
+        else alert("Plate already exists."); }
+    }
+    function removePlate() {
+      const plateSelect = document.getElementById('plate'); const selected = plateSelect.value;
+      if (selected && confirm("Delete plate: " + selected + "?")) {
+        let plates = JSON.parse(localStorage.getItem('plates') || '[]');
+        plates = plates.filter(p => p !== selected); localStorage.setItem('plates', JSON.stringify(plates)); loadPlates();
+      }
+    }
+    loadDrivers(); loadPlates();
+
+    // ==== FORM SUBMIT TO FIRESTORE ====
+    document.getElementById('gpsForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const entry = {
+        driver: form.driver.value,
+        plate: form.plate.value,
+        startingPoint: form.startingPoint.value,
+        destination: form.destination.value,
+        stoppingPlace: form.stoppingPlace.value,
+        date: form.date.value,
+        stoppingTime: form.stoppingTime.value,
+        unauthorised: form.unauthorised.value,
+        gpsProblem: form.gpsProblem.value,
+        techProblem: form.techProblem.value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      try {
+        await db.collection("gpsEntries").add(entry);
+        form.reset();
+        alert('Entry added! Submit more or view data.');
+        loadDrivers(); loadPlates();
+      } catch (err) {
+        alert('Failed to submit: ' + err.message);
+      }
+    });
+
+    // PWA: Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.error('Service Worker registration failed:', err));
+    }
+  </script>
+</body>
+</html>
